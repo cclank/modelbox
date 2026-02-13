@@ -1,0 +1,13 @@
+{
+  "name": "modelbox",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Universal OpenAI-protocol proxy for payload capture and mock/passthrough debugging",
+  "scripts": {
+    "start": "node src/server.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
