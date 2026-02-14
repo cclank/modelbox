@@ -89,13 +89,36 @@ openclaw config set models.providers.modelbox --json '{
 }'
 ```
 
-### 设置为默认模型
+### 推荐方式：按会话切换模型（不要改全局默认模型）
 
 ```bash
-openclaw config set agents.defaults.model.primary "modelbox/debug-model"
+/model modelbox/debug-model
+# 或
+/new modelbox/debug-model
 ```
 
-如果你启用了 `agents.defaults.models` 白名单，记得把 `modelbox/debug-model` 加进去。
+这样不会影响你生产默认模型，只会让当前会话走 ModelBox。
+
+### 可选：单独建一个 debug agent
+
+如果你想长期保留调试通道，可以单独建 `debug` agent，只给它配置 `modelbox/debug-model`，并仅把你的调试会话绑定到这个 agent。
+
+```json5
+{
+  agents: {
+    list: [
+      { id: "main" },
+      { id: "debug", model: { primary: "modelbox/debug-model" } }
+    ]
+  },
+  bindings: [
+    // 只把特定调试流量路由到 debug agent
+    { agentId: "debug", match: { channel: "telegram", peer: { kind: "direct", id: "123456789" } } }
+  ]
+}
+```
+
+如果你启用了 `agents.defaults.models` 白名单，记得把 `modelbox/debug-model` 加进去，这样 `/model` 和会话覆盖才可用。
 
 ## 其他 Agent 通用接入
 
