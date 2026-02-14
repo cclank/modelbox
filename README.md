@@ -89,7 +89,7 @@ openclaw config set models.providers.modelbox --json '{
 }'
 ```
 
-### Recommended: switch model per session (do not change global default)
+### Switch to ModelBox in current session
 
 ```bash
 /model modelbox/debug-model
@@ -97,28 +97,7 @@ openclaw config set models.providers.modelbox --json '{
 /new modelbox/debug-model
 ```
 
-This keeps your production default model unchanged and only routes the current chat session to ModelBox.
-
-### Optional: dedicated debug agent
-
-If you want a stable debug lane, create a dedicated agent and set only that agent's model to `modelbox/debug-model`, then bind only your debug peers/channels to that agent.
-
-```json5
-{
-  agents: {
-    list: [
-      { id: "main" },
-      { id: "debug", model: { primary: "modelbox/debug-model" } }
-    ]
-  },
-  bindings: [
-    // Route only selected debug traffic to the debug agent
-    { agentId: "debug", match: { channel: "telegram", peer: { kind: "direct", id: "123456789" } } }
-  ]
-}
-```
-
-If you use `agents.defaults.models` allowlist, include `modelbox/debug-model` there for `/model` and session overrides.
+If you use `agents.defaults.models` allowlist, include `modelbox/debug-model` there so `/model` and session overrides can use it.
 
 ## Generic Integration (Any Agent)
 
