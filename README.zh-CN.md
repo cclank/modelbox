@@ -180,3 +180,17 @@ Mock 模式下输出文本是紧凑摘要：
 ```text
 DEBUG_CONTEXT_SUMMARY {...}
 ```
+
+## Prompt 拆解脚本
+
+使用内置分析脚本可将一次请求切分为主要 Prompt 模块，并估算各模块 Token 成本。
+
+```bash
+npm run analyze:prompt -- --file logs/modelbox.jsonl
+```
+
+常用参数：
+
+- `--traceId <id>`：按 traceId 精确分析
+- `--index <n>`：按请求记录序号分析（`-1` 表示最新）
+- `--json`：输出机器可读 JSON

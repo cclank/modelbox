@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Universal OpenAI-protocol proxy for payload capture and mock/passthrough debugging",
   "scripts": {
-    "start": "node src/server.mjs"
+    "start": "node src/server.mjs",
+    "analyze:prompt": "node src/analyze-log.mjs"
   },
   "engines": {
     "node": ">=22"

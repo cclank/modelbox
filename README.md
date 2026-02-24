@@ -180,3 +180,17 @@ Mock output text is intentionally compact:
 ```text
 DEBUG_CONTEXT_SUMMARY {...}
 ```
+
+## Prompt Breakdown Script
+
+Use the built-in analyzer to split a captured request into major prompt blocks and estimate token cost per block.
+
+```bash
+npm run analyze:prompt -- --file logs/modelbox.jsonl
+```
+
+Useful options:
+
+- `--traceId <id>`: analyze one trace directly
+- `--index <n>`: pick a request record by index (`-1` = latest)
+- `--json`: machine-readable output
