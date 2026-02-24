@@ -172,7 +172,7 @@ curl -s -X POST http://127.0.0.1:8787/admin/state \
 - `direction`（`request` 或 `response`）
 - `mode`（`mock` 或 `passthrough`）
 - `path`、`method`、`status`
-- `summary`（`messageCount`、`roles`、`toolsCount`、`imagesCount`、`promptChars`）
+- `summary`（`messageCount`、`roles`、`toolsCount`、`imagesCount`、`promptChars`、`promptTokensApprox`）
 - `body` 与 `bodySha256`
 
 Mock 模式下输出文本是紧凑摘要：

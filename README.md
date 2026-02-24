@@ -172,7 +172,7 @@ Each JSONL line includes key fields such as:
 - `direction` (`request` or `response`)
 - `mode` (`mock` or `passthrough`)
 - `path`, `method`, `status`
-- `summary` (`messageCount`, `roles`, `toolsCount`, `imagesCount`, `promptChars`)
+- `summary` (`messageCount`, `roles`, `toolsCount`, `imagesCount`, `promptChars`, `promptTokensApprox`)
 - `body` and `bodySha256`
 
 Mock output text is intentionally compact:

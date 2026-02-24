@@ -230,7 +230,10 @@ function buildSummary({ traceId, pathname, payload, bodyText }) {
       : payload && typeof payload === "object" && Array.isArray(payload.messages)
         ? payload.messages
         : bodyText;
-  const promptChars = safeJsonStringify(promptSource)?.length || 0;
+  const promptSerialized = safeJsonStringify(promptSource) || "";
+  const promptChars = promptSerialized.length;
+  // Approximate token count without model-specific tokenizer dependency.
+  const promptTokensApprox = promptSerialized ? Math.ceil(Buffer.byteLength(promptSerialized, "utf8") / 4) : 0;
 
   return {
     traceId,
@@ -242,6 +245,7 @@ function buildSummary({ traceId, pathname, payload, bodyText }) {
     toolsCount,
     imagesCount: collectImageCount(payload),
     promptChars,
+    promptTokensApprox,
   };
 }
 
