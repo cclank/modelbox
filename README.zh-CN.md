@@ -48,7 +48,6 @@ flowchart LR
 ### 1. Mock 模式启动
 
 ```bash
-cd tools/modelbox
 MODELBOX_MODE=mock npm start
 ```
 
@@ -57,7 +56,6 @@ MODELBOX_MODE=mock npm start
 ### 2. 透传模式启动
 
 ```bash
-cd tools/modelbox
 MODELBOX_MODE=passthrough \
 MODELBOX_UPSTREAM_BASE_URL=https://api.openai.com \
 MODELBOX_UPSTREAM_API_KEY="$OPENAI_API_KEY" \
@@ -65,6 +63,19 @@ npm start
 ```
 
 注意：`MODELBOX_UPSTREAM_BASE_URL` 应该填服务根地址。OpenAI 场景请用 `https://api.openai.com`，不要带 `/v1`。
+
+### 3. Gemini（OpenAI 兼容端点）
+
+Gemini 的 OpenAI 兼容端点通常期望 `/chat/completions`（不带本地 `/v1` 前缀）。  
+通过 `MODELBOX_UPSTREAM_STRIP_PREFIX=/v1`，ModelBox 会把本地 `/v1/chat/completions` 转发为上游 `/chat/completions`。
+
+```bash
+MODELBOX_MODE=passthrough \
+MODELBOX_UPSTREAM_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai \
+MODELBOX_UPSTREAM_API_KEY="$GEMINI_API_KEY" \
+MODELBOX_UPSTREAM_STRIP_PREFIX=/v1 \
+npm start
+```
 
 ## OpenClaw 接入
 
@@ -123,6 +134,7 @@ curl -s -X POST http://127.0.0.1:8787/admin/state \
     "mode": "passthrough",
     "capture": true,
     "upstreamBaseUrl": "https://api.openai.com",
+    "upstreamStripPrefix": "",
     "maxCaptureBytes": 4194304
   }'
 ```
@@ -145,7 +157,10 @@ curl -s -X POST http://127.0.0.1:8787/admin/state \
 | `MODELBOX_MAX_CAPTURE_BYTES` | `2097152` | 响应抓包最大字节数 |
 | `MODELBOX_UPSTREAM_BASE_URL` | 空 | 上游服务根地址（透传模式必填） |
 | `MODELBOX_UPSTREAM_API_KEY` | 空 | 可选，上游 API Key 覆盖 |
+| `MODELBOX_UPSTREAM_STRIP_PREFIX` | 空 | 可选，转发前剥离路径前缀（例如 `/v1`） |
 | `MODELBOX_ADMIN_TOKEN` | 空 | 可选，管理接口鉴权令牌 |
+
+抓包日志写入 `MODELBOX_LOG_FILE`（默认 `./logs/modelbox.jsonl`），相对路径按进程启动时的工作目录解析。
 
 兼容说明：旧的 `SIDECAR_*` 变量仍然可用。
 

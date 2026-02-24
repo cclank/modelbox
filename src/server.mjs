@@ -72,6 +72,9 @@ const state = {
     envValue("MODELBOX_UPSTREAM_BASE_URL", "SIDECAR_UPSTREAM_BASE_URL") || "",
   ).trim(),
   upstreamApiKey: String(envValue("MODELBOX_UPSTREAM_API_KEY", "SIDECAR_UPSTREAM_API_KEY") || "").trim(),
+  upstreamStripPrefix: String(
+    envValue("MODELBOX_UPSTREAM_STRIP_PREFIX", "SIDECAR_UPSTREAM_STRIP_PREFIX") || "",
+  ).trim(),
   adminToken: String(envValue("MODELBOX_ADMIN_TOKEN", "SIDECAR_ADMIN_TOKEN") || "").trim(),
   redactAuthHeaders: parseBool(
     envValue("MODELBOX_REDACT_AUTH_HEADERS", "SIDECAR_REDACT_AUTH_HEADERS"),
@@ -361,8 +364,18 @@ function applyForwardHeaders(reqHeaders) {
 function mergeUrl(baseUrl, incomingPathAndQuery) {
   const base = new URL(baseUrl);
   const incoming = new URL(incomingPathAndQuery, "http://modelbox.local");
+  let incomingPathname = incoming.pathname;
+  const stripPrefixRaw = state.upstreamStripPrefix;
+  if (stripPrefixRaw) {
+    const stripPrefix = stripPrefixRaw.startsWith("/") ? stripPrefixRaw : `/${stripPrefixRaw}`;
+    if (incomingPathname === stripPrefix) {
+      incomingPathname = "/";
+    } else if (incomingPathname.startsWith(`${stripPrefix}/`)) {
+      incomingPathname = incomingPathname.slice(stripPrefix.length);
+    }
+  }
   const basePath = base.pathname.replace(/\/+$/, "");
-  const incomingPath = incoming.pathname.replace(/^\/+/, "");
+  const incomingPath = incomingPathname.replace(/^\/+/, "");
   const pathname = `${basePath}/${incomingPath}`.replace(/\/+/g, "/");
   return `${base.origin}${pathname}${incoming.search}`;
 }
@@ -373,6 +386,7 @@ function getPublicState() {
     capture: state.capture,
     upstreamBaseUrl: state.upstreamBaseUrl || null,
     hasUpstreamApiKey: Boolean(state.upstreamApiKey),
+    upstreamStripPrefix: state.upstreamStripPrefix || null,
     logFile: state.logFile,
     maxCaptureBytes: state.maxCaptureBytes,
   };
@@ -784,6 +798,9 @@ async function handleAdmin(req, res, pathname) {
     }
     if (typeof bodyJson.upstreamApiKey === "string") {
       state.upstreamApiKey = bodyJson.upstreamApiKey.trim();
+    }
+    if (typeof bodyJson.upstreamStripPrefix === "string") {
+      state.upstreamStripPrefix = bodyJson.upstreamStripPrefix.trim();
     }
     if (typeof bodyJson.maxCaptureBytes === "number" && bodyJson.maxCaptureBytes > 0) {
       state.maxCaptureBytes = Math.floor(bodyJson.maxCaptureBytes);

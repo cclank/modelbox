@@ -48,7 +48,6 @@ flowchart LR
 ### 1. Start in mock mode
 
 ```bash
-cd tools/modelbox
 MODELBOX_MODE=mock npm start
 ```
 
@@ -57,7 +56,6 @@ Default bind: `127.0.0.1:8787`.
 ### 2. Start in passthrough mode
 
 ```bash
-cd tools/modelbox
 MODELBOX_MODE=passthrough \
 MODELBOX_UPSTREAM_BASE_URL=https://api.openai.com \
 MODELBOX_UPSTREAM_API_KEY="$OPENAI_API_KEY" \
@@ -65,6 +63,19 @@ npm start
 ```
 
 Note: `MODELBOX_UPSTREAM_BASE_URL` should be provider root URL (for OpenAI use `https://api.openai.com`, not `/v1`).
+
+### 3. Gemini (OpenAI-compatible endpoint)
+
+Gemini's OpenAI-compatible endpoint usually expects `/chat/completions` (without local `/v1` prefix).  
+Use `MODELBOX_UPSTREAM_STRIP_PREFIX=/v1` so ModelBox rewrites `/v1/chat/completions` to `/chat/completions` upstream.
+
+```bash
+MODELBOX_MODE=passthrough \
+MODELBOX_UPSTREAM_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai \
+MODELBOX_UPSTREAM_API_KEY="$GEMINI_API_KEY" \
+MODELBOX_UPSTREAM_STRIP_PREFIX=/v1 \
+npm start
+```
 
 ## OpenClaw Integration
 
@@ -123,6 +134,7 @@ curl -s -X POST http://127.0.0.1:8787/admin/state \
     "mode": "passthrough",
     "capture": true,
     "upstreamBaseUrl": "https://api.openai.com",
+    "upstreamStripPrefix": "",
     "maxCaptureBytes": 4194304
   }'
 ```
@@ -145,7 +157,10 @@ If `MODELBOX_ADMIN_TOKEN` is configured, pass:
 | `MODELBOX_MAX_CAPTURE_BYTES` | `2097152` | Max captured response bytes |
 | `MODELBOX_UPSTREAM_BASE_URL` | empty | Upstream base URL (required in passthrough) |
 | `MODELBOX_UPSTREAM_API_KEY` | empty | Optional upstream API key override |
+| `MODELBOX_UPSTREAM_STRIP_PREFIX` | empty | Optional path prefix stripped before forwarding (for example `/v1`) |
 | `MODELBOX_ADMIN_TOKEN` | empty | Optional admin API token |
+
+Capture logs are written to `MODELBOX_LOG_FILE` (default `./logs/modelbox.jsonl`), resolved relative to the process working directory.
 
 Backward compatibility: legacy `SIDECAR_*` variables are still accepted.
 
