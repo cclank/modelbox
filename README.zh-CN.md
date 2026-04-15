@@ -194,3 +194,17 @@ npm run analyze:prompt -- --file logs/modelbox.jsonl
 - `--traceId <id>`：按 traceId 精确分析
 - `--index <n>`：按请求记录序号分析（`-1` 表示最新）
 - `--json`：输出机器可读 JSON
+
+## 进阶分析器（Python）
+
+想要多条 record 总览、工具按 schema 体积排序、跨请求对比等进阶功能，可以用 [`tools/`](./tools/README.md) 下的 Python 分析器：
+
+```bash
+python3 tools/analyze.py logs/modelbox.jsonl            # 全部 record 总览
+python3 tools/analyze.py logs/modelbox.jsonl tokens 0   # token 分布柱状图
+python3 tools/analyze.py logs/modelbox.jsonl tools 0    # 工具按 schema 体积降序 + 占比
+python3 tools/analyze.py logs/modelbox.jsonl diff 0 1   # 对比两条请求（前缀缓存命中检查）
+python3 tools/analyze.py logs/modelbox.jsonl extract 0  # 把系统提示 / 消息 / 工具拆到文件
+```
+
+与 `summary.promptTokensApprox`（只统计 `messages`）不同，该分析器同时测量 `tools` 字段——现代 Agent 的 tools schema 经常和系统提示词体积相当甚至更大。完整命令与示例见 [`tools/README.md`](./tools/README.md)。

@@ -194,3 +194,17 @@ Useful options:
 - `--traceId <id>`: analyze one trace directly
 - `--index <n>`: pick a request record by index (`-1` = latest)
 - `--json`: machine-readable output
+
+## Advanced Analyzer (Python)
+
+For multi-record summary, tool-by-tool schema size breakdown, and cross-request diffing, use the Python analyzer under [`tools/`](./tools/README.md):
+
+```bash
+python3 tools/analyze.py logs/modelbox.jsonl            # overview of every record
+python3 tools/analyze.py logs/modelbox.jsonl tokens 0   # token distribution bar chart
+python3 tools/analyze.py logs/modelbox.jsonl tools 0    # tools sorted by schema size + % of total
+python3 tools/analyze.py logs/modelbox.jsonl diff 0 1   # compare two requests (prefix-cache check)
+python3 tools/analyze.py logs/modelbox.jsonl extract 0  # dump system/messages/tools to files
+```
+
+Unlike `summary.promptTokensApprox` (which only counts `messages`), this analyzer also measures the `tools` field — in modern agents the tools schema often equals or exceeds the system prompt in size. See [`tools/README.md`](./tools/README.md) for all commands and examples.
